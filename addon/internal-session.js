@@ -137,7 +137,7 @@ export default ObjectProxy.extend(Evented, {
 
   _clear(trigger) {
     trigger = Boolean(trigger) && this.get('isAuthenticated');
-    this.beginPropertyChanges();
+  //  this.beginPropertyChanges();
     this.setProperties({
       isAuthenticated: false,
       authenticator:   null,
