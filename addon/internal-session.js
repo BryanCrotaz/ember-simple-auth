@@ -104,6 +104,11 @@ export default ObjectProxy.extend(Evented, {
   _setup(authenticator, authenticatedContent, trigger) {
     trigger = Boolean(trigger) && !this.get('isAuthenticated');
 //    this.beginPropertyChanges();
+    this.setProperties({
+      isAuthenticated: false,
+      authenticator,
+      'content.authenticated': {}
+    });
     // set(this.content, 'authenticated', authenticatedContent);
     this._bindToAuthenticatorEvents();
 
@@ -111,22 +116,22 @@ export default ObjectProxy.extend(Evented, {
       .then(() => {
         this.setProperties({
           isAuthenticated: true,
-          authenticator,
           'content.authenticated': authenticatedContent
         });
 //            this.endPropertyChanges();
-        if (trigger) {
-          this.trigger('authenticationSucceeded');
-        }
       })
       .catch(() => {
         this.setProperties({
           isAuthenticated: false,
-          authenticator: null,
-          'content.authenticated': {}
+          authenticator: null
         });
 //        set(this.content, 'authenticated', {});
 //        this.endPropertyChanges();
+      })
+      .then(() => {
+        if (trigger) {
+          this.trigger('authenticationSucceeded');
+        }
       });
   },
 
