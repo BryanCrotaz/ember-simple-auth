@@ -103,27 +103,36 @@ export default ObjectProxy.extend(Evented, {
 
   _setup(authenticator, authenticatedContent, trigger) {
     trigger = Boolean(trigger) && !this.get('isAuthenticated');
-    this.beginPropertyChanges();
+//    this.beginPropertyChanges();
     this.setProperties({
-      isAuthenticated: true,
-      authenticator
+      isAuthenticated: false,
+      authenticator,
+      'content.authenticated': {}
     });
-    set(this.content, 'authenticated', authenticatedContent);
+    // set(this.content, 'authenticated', authenticatedContent);
     this._bindToAuthenticatorEvents();
 
     return this._updateStore()
-    .then(() => {
-      if (trigger) {
-        this.trigger('authenticationSucceeded');
-      }
-    }, () => {
-      this.setProperties({
-        isAuthenticated: false,
-        authenticator: null
+      .then(() => {
+        this.setProperties({
+          isAuthenticated: true,
+          'content.authenticated': authenticatedContent
+        });
+//            this.endPropertyChanges();
+      })
+      .catch(() => {
+        this.setProperties({
+          isAuthenticated: false,
+          authenticator: null
+        });
+//        set(this.content, 'authenticated', {});
+//        this.endPropertyChanges();
+      })
+      .then(() => {
+        if (trigger) {
+          this.trigger('authenticationSucceeded');
+        }
       });
-      set(this.content, 'authenticated', {});
-      this.endPropertyChanges();
-    });
   },
 
   _clear(trigger) {
@@ -131,16 +140,17 @@ export default ObjectProxy.extend(Evented, {
     this.beginPropertyChanges();
     this.setProperties({
       isAuthenticated: false,
-      authenticator:   null
+      authenticator:   null,
+      'content.authenticated': {}
     });
-    set(this.content, 'authenticated', {});
+    //set(this.content, 'authenticated', {});
 
     return this._updateStore().then(() => {
-      this.endPropertyChanges();
+    //  this.endPropertyChanges();
       if (trigger) {
         this.trigger('invalidationSucceeded');
       }
-    }, () => this.endPropertyChanges());
+    }/*, () => this.endPropertyChanges()*/);
   },
 
   _clearWithContent(content, trigger) {
