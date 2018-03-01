@@ -325,7 +325,13 @@ export default BaseAuthenticator.extend({
       fetch(url, options).then((response) => {
         response.text().then((text) => {
           try {
-            let json = JSON.parse(text);
+            let json;
+            try {
+              json = JSON.parse(text);
+            } catch (err) {
+              // reject if response isn't valid json
+              reject(`${err}\n${response}`);
+            }
             if (!response.ok) {
               response.responseJSON = json;
               reject(response);
